@@ -13,8 +13,8 @@ router.get('/', async (req, res, next) => {
   res.json({ contacts })
 })
 
-router.get('/:contactId', async (req, res, next) => {
-  const  id  = req.params.contactId;  
+router.get('/:id', async (req, res, next) => {
+  const  id  = req.params.id;  
   const contact = await getContactById(id);
   if (!contact) {
     res.status(404).json({ "message": "Not found" })
@@ -24,23 +24,29 @@ router.get('/:contactId', async (req, res, next) => {
 })
 
 router.post('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
+  const newContact = await addContact(req.body); 
+  res.status(201).json({ newContact })
 })
 
-router.delete('/:contactId', async (req, res, next) => {
-  const  id  = req.params.contactId; 
+router.delete('/:id', async (req, res, next) => {
+  const  id  = req.params.id; 
   const contactToDelete = await getContactById(id);
   if (!contactToDelete) {
     res.status(404).json({ "message": "Not found" })
     return    
   }
   await removeContact(id);
-  res.status(200).json({"message": "contact deleted"})
+  res.status(204).json({"message": "contact deleted"})
 
 })
 
-router.patch('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
+router.put('/:id', async (req, res, next) => {
+  const id = req.params.id;
+  const updatedContact = await updateContact (id, req.body)
+  if (updatedContact) {
+    return res.status(200).json(updatedContact)
+  }
+  res.status(404).json({ message: 'Not found' })
 })
 
 module.exports = router
