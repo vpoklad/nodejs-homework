@@ -8,6 +8,8 @@ const {
   updateContact,
 } = require('../../model/index')
 
+const { validateCreate, validateUpdate} = require ('./validation')
+
 router.get('/', async (req, res, next) => {
   const contacts = await listContacts(); 
   res.json({ contacts })
@@ -23,9 +25,9 @@ router.get('/:id', async (req, res, next) => {
   res.json({ contact })
 })
 
-router.post('/', async (req, res, next) => {
+router.post('/', validateCreate, async (req, res, next) => {
   const newContact = await addContact(req.body); 
-  res.status(201).json({ newContact })
+  res.status(201).json(newContact )
 })
 
 router.delete('/:id', async (req, res, next) => {
@@ -40,7 +42,7 @@ router.delete('/:id', async (req, res, next) => {
 
 })
 
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', validateUpdate, async (req, res, next) => {
   const id = req.params.id;
   const updatedContact = await updateContact (id, req.body)
   if (updatedContact) {
