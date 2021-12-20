@@ -1,54 +1,58 @@
-const express = require('express')
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
 const {
   listContacts,
   getContactById,
   removeContact,
   addContact,
   updateContact,
-} = require('../../model/index')
+} = require('../../model/index');
 
-const { validateCreate, validateUpdate} = require ('./validation')
+const { validateCreate, validateUpdate } = require('./validation');
 
 router.get('/', async (req, res, next) => {
-  const contacts = await listContacts(); 
-  res.json({ contacts })
-})
+  const contacts = await listContacts();
+  res.json(contacts);
+});
 
 router.get('/:id', async (req, res, next) => {
-  const  id  = req.params.id;  
+  const id = req.params.id;
   const contact = await getContactById(id);
   if (!contact) {
-    res.status(404).json({ "message": "Not found" })
-    return    
+    res.status(404).json({ message: 'Not found' });
+    return;
   }
-  res.json({ contact })
-})
+  res.json({ contact });
+});
 
 router.post('/', validateCreate, async (req, res, next) => {
-  const newContact = await addContact(req.body); 
-  res.status(201).json(newContact )
-})
-
+  try {
+    const newContact = await addContact(req.body);
+    res.status(201).json(newContact);
+  } catch (error) {
+    if (error.code === 11000)
+      res.status(400).json(`Not unique input in ${error}`);
+  }
+});
+// TODO
 router.delete('/:id', async (req, res, next) => {
-  const  id  = req.params.id; 
+  const id = req.params.id;
   const contactToDelete = await getContactById(id);
   if (!contactToDelete) {
-    res.status(404).json({ "message": "Not found" })
-    return    
+    res.status(404).json({ message: 'Not found' });
+    return;
   }
   await removeContact(id);
-  res.status(204).json({"message": "contact deleted"})
-
-})
+  res.status(204).json({ message: 'contact deleted' });
+});
 
 router.put('/:id', validateUpdate, async (req, res, next) => {
   const id = req.params.id;
-  const updatedContact = await updateContact (id, req.body)
+  const updatedContact = await updateContact(id, req.body);
   if (updatedContact) {
-    return res.status(200).json(updatedContact)
+    return res.status(200).json(updatedContact);
   }
-  res.status(404).json({ message: 'Not found' })
-})
+  res.status(404).json({ message: 'Not found' });
+});
 
-module.exports = router
+module.exports = router;

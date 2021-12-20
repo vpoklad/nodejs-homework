@@ -1,56 +1,47 @@
-const fs = require('fs/promises')
-const path = require('path');
-const crypto = require ('crypto')
-const contactPath = path.join(__dirname, 'contacts.json');
+const { Contacts } = require('../db/contactModel');
 
+const listContacts = async () => {
+  const contacts = await Contacts.find({});
+  return contacts;
+};
 
+const getContactById = async contactId => {
+  const contact = await Contacts.findById(contactId);
+  return contact;
+};
 
-const readContent = async () => {
-  const content = await fs.readFile(contactPath, 'utf8');
-  return JSON.parse(content);
-}
+const removeContact = async contactId => {
+  // const contacts = await readContent();
+  // const newContacts = contacts.filter(it => it.id !== contactId);
+  // await writeContent(newContacts);
+};
 
-const writeContent = async (content) => {
-  await fs.writeFile(contactPath, JSON.stringify(content, null, 2))
-}
-
-
-const listContacts = async () => await readContent();  
-
-
-const getContactById = async (contactId) => {
-  
-  const contacts = await readContent()
-  return contacts.find(it => it.id === contactId)
-}
-
-const removeContact = async (contactId) => {
-  const contacts = await readContent();
-  const newContacts = contacts.filter(it => it.id !== contactId);
-  await writeContent(newContacts);
-}
-
-const addContact = async ({ name, email, phone }) => {
-  const contacts = await readContent();
-  const newContact = { id: crypto.randomUUID(), name, email, phone  };
-  contacts.push(newContact);
-  await writeContent(contacts);
-  return newContact
-}
+const addContact = async ({ name, email, phone, favorite = false }) => {
+  const newContact = new Contacts({
+    name,
+    email,
+    phone,
+    favorite,
+  });
+  await newContact.save();
+  return newContact;
+};
 
 const updateContact = async (contactId, body) => {
-  const contacts = await readContent();
-  const index = contacts.findIndex(it => it.id === contactId);
-  if (index !== -1) {
-    const updatedContact = { id: contactId, ...contacts[index], ...body }
-    contacts[index] = updatedContact;
-    await writeContent(contacts);
-    return updatedContact;
-  }
-  return null
-  
-}
-
+  // const contacts = await readContent();
+  // const index = contacts.findIndex(it => it.id === contactId);
+  // if (index !== -1) {
+  //   const updatedContact = {
+  //     id: contactId,
+  //     ...contacts[index],
+  //     ...body,
+  //   };
+  //   contacts[index] = updatedContact;
+  //   await writeContent(contacts);
+  //   return updatedContact;
+  // }
+  // return null;
+};
 
 module.exports = {
   listContacts,
@@ -58,4 +49,4 @@ module.exports = {
   removeContact,
   addContact,
   updateContact,
-}
+};
