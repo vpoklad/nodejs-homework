@@ -1,6 +1,6 @@
 const app = require('../app');
 require('dotenv').config();
-const { connectMongo } = require('../db/connection');
+const { connectMongo, closeMongo } = require('../db/connection');
 
 const PORT = process.env.PORT || 3000;
 
@@ -15,7 +15,15 @@ const start = async () => {
       }
       console.log(`Server running. Use our API on port: ${PORT}`);
     });
-  } catch (error) {}
+  } catch (error) {
+    console.log('Error!', error.message);
+    process.exit(1);
+  }
 };
 
 start();
+
+process.on('SIGINT', async () => {
+  console.log('Connection DB closed');
+  await closeMongo();
+});

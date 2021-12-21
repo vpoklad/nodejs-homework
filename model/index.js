@@ -11,9 +11,7 @@ const getContactById = async contactId => {
 };
 
 const removeContact = async contactId => {
-  // const contacts = await readContent();
-  // const newContacts = contacts.filter(it => it.id !== contactId);
-  // await writeContent(newContacts);
+  await Contacts.findByIdAndRemove(contactId);
 };
 
 const addContact = async ({ name, email, phone, favorite = false }) => {
@@ -28,19 +26,17 @@ const addContact = async ({ name, email, phone, favorite = false }) => {
 };
 
 const updateContact = async (contactId, body) => {
-  // const contacts = await readContent();
-  // const index = contacts.findIndex(it => it.id === contactId);
-  // if (index !== -1) {
-  //   const updatedContact = {
-  //     id: contactId,
-  //     ...contacts[index],
-  //     ...body,
-  //   };
-  //   contacts[index] = updatedContact;
-  //   await writeContent(contacts);
-  //   return updatedContact;
-  // }
-  // return null;
+  const updatedContact = await Contacts.findByIdAndUpdate(contactId, body, {
+    returnDocument: 'after',
+  });
+  return updatedContact;
+};
+
+const updateStatusContact = async (contactId, body) => {
+  const updatedContact = await Contacts.findByIdAndUpdate(contactId, body, {
+    returnDocument: 'after',
+  });
+  return updatedContact;
 };
 
 module.exports = {
@@ -49,4 +45,5 @@ module.exports = {
   removeContact,
   addContact,
   updateContact,
+  updateStatusContact,
 };

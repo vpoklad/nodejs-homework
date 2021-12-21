@@ -6,6 +6,7 @@ const {
   removeContact,
   addContact,
   updateContact,
+  updateStatusContact,
 } = require('../../model/index');
 
 const { validateCreate, validateUpdate } = require('./validation');
@@ -49,6 +50,19 @@ router.delete('/:id', async (req, res, next) => {
 router.put('/:id', validateUpdate, async (req, res, next) => {
   const id = req.params.id;
   const updatedContact = await updateContact(id, req.body);
+  if (updatedContact) {
+    return res.status(200).json(updatedContact);
+  }
+  res.status(404).json({ message: 'Not found' });
+});
+
+router.patch('/:id/favorite', validateUpdate, async (req, res, next) => {
+  const id = req.params.id;
+  console.log(req.body);
+  if (req.body.favorite === null) {
+    return res.status(400).json({ message: 'missing field favorite' });
+  }
+  const updatedContact = await updateStatusContact(id, req.body);
   if (updatedContact) {
     return res.status(200).json(updatedContact);
   }

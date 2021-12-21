@@ -8,4 +8,8 @@ const connectMongo = async () => {
   });
 };
 
-module.exports = { connectMongo };
+const closeMongo = async () => {
+  await mongoose.disconnect();
+};
+
+module.exports = { connectMongo, closeMongo };
