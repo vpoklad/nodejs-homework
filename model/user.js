@@ -2,26 +2,30 @@ import mongooseService from 'mongoose';
 
 const { Schema, model } = mongooseService;
 
-const contactSchema = new Schema(
+const userSchema = new Schema(
   {
     name: {
       type: String,
-      required: [true, 'Set name for contact'],
+      default: 'Guest',
+    },
+    password: {
+      type: String,
+      required: [true, 'Password is required'],
     },
     email: {
       type: String,
+      required: [true, 'Email is required'],
+      unique: true,
     },
-    phone: {
+    subscription: {
       type: String,
+      enum: ['starter', 'pro', 'business'],
+      default: 'starter',
     },
-    favorite: {
-      type: Boolean,
-      default: false,
+    token: {
+      type: String,
+      default: null,
     },
-    // owner: {
-    //   type: SchemaTypes.ObjectId,
-    //   ref: 'user',
-    // },
   },
   {
     versionKey: false,
@@ -37,6 +41,5 @@ const contactSchema = new Schema(
   },
 );
 
-const Contact = model('contact', contactSchema);
-
-export default Contact;
+const User = model('user', userSchema);
+export default User;

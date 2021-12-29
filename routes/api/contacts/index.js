@@ -5,7 +5,7 @@ import {
   addContact,
   removeContact,
   updateContact,
-} from '../../controllers/contacts/index.js';
+} from '../../../controllers/contacts';
 
 import {
   validateCreate,
@@ -24,12 +24,11 @@ router.post('/', validateCreate, addContact);
 
 router.delete('/:id', validateId, removeContact);
 
-router.put('/:id', validateId, validateUpdate, updateContact);
+router.put('/:id', [validateId, validateUpdate], updateContact);
 
 router.patch(
   '/:id/favorite',
-  validateId,
-  validateUpdateFavorite,
+  [validateId, validateUpdateFavorite],
   updateContact,
 );
 
