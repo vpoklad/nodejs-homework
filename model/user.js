@@ -1,6 +1,8 @@
 import mongooseService from 'mongoose';
+import bcrypt from 'bcryptjs';
+import { Roles } from '../lib/constants';
 
-const { Schema, model } = mongooseService;
+const { Schema, model, SchemaTypes } = mongooseService;
 
 const userSchema = new Schema(
   {
@@ -19,12 +21,16 @@ const userSchema = new Schema(
     },
     subscription: {
       type: String,
-      enum: ['starter', 'pro', 'business'],
-      default: 'starter',
+      enum: [Roles.STARTER, Roles.PRO, Roles.BUSINESS],
+      default: Roles.STARTER,
     },
     token: {
       type: String,
       default: null,
+    },
+    owner: {
+      type: SchemaTypes.ObjectId,
+      ref: 'user',
     },
   },
   {
@@ -40,6 +46,17 @@ const userSchema = new Schema(
     toObject: { virtuals: true },
   },
 );
+userSchema.pre('save', async function (next) {
+  if (this.isModified) {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+  }
+  next();
+});
+
+userSchema.methods.isValidPassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
 
 const User = model('user', userSchema);
 export default User;

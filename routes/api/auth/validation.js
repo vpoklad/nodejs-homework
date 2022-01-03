@@ -12,7 +12,7 @@ const createSchema = Joi.object({
 });
 
 const credentialsSchema = Joi.object({
-  name: Joi.string().min(2).max(30),
+  email: Joi.string().min(2).max(30),
   password: Joi.string().min(2).max(30).required(),
 });
 

@@ -1,8 +1,7 @@
-import User from '../repository/users';
+import User from '../model/user';
 
 const findByEmail = async email => {
-  const user = await User.findOne({ email });
-  return user;
+  return await User.findOne({ email });
 };
 
 const create = async body => {
@@ -10,4 +9,8 @@ const create = async body => {
   return await user.save();
 };
 
-export default { findByEmail, create };
+const updateToken = async (id, token) => {
+  return await User.findOneAndUpdate({ _id: id }, { token });
+};
+
+export default { findByEmail, create, updateToken };

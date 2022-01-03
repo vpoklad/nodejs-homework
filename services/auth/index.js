@@ -1,21 +1,43 @@
 import jwt from 'jsonwebtoken';
-import users from '../../repository/users';
+import UsersRepository from '../../repository/users';
 const SECRET_KEY = process.env.JWT_SECRET_KEY;
 
 class AuthService {
   async isUserExist(email) {
-    const user = await users.findByEmail(email);
+    const user = await UsersRepository.findByEmail(email);
     return !!user;
   }
 
   async create(body) {
-    const { id, name, email, subscription } = await users.create(body);
+    const { id, name, email, subscription } = await UsersRepository.create(
+      body,
+    );
     return {
       id,
       name,
       email,
       subscription,
     };
+  }
+
+  async getUser(email, password) {
+    const user = await UsersRepository.findByEmail(email);
+    const isValidPassword = await user?.isValidPassword(password);
+    if (!isValidPassword) {
+      return null;
+    }
+    return user;
+  }
+
+  getToken(user) {
+    const { id, email } = user;
+    const payload = { id, email };
+    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '8d' });
+    return token;
+  }
+
+  async setToken(id, token) {
+    await UsersRepository.updateToken(id, token);
   }
 }
 
