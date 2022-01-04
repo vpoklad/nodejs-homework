@@ -26,14 +26,20 @@ const login = async (req, res, next) => {
     return res.status(HttpCode.UNAUTHORIZED).json({
       status: 'error',
       code: HttpCode.UNAUTHORIZED,
-      message: 'Email Email or password is wrong use',
+      message: 'Email or password is wrong',
     });
   }
   const token = authService.getToken(user);
   await authService.setToken(user.id, token);
+
   res
     .status(HttpCode.OK)
     .json({ status: 'success', code: HttpCode.OK, data: { token } });
 };
 
-export { registration, login };
+const logout = async (req, res, next) => {
+  await authService.setToken(req.user.id, null);
+  res.status(HttpCode.NO_CONTENT);
+};
+
+export { registration, login, logout };
