@@ -41,5 +41,25 @@ const logout = async (req, res, next) => {
   await authService.setToken(req.user.id, null);
   res.status(HttpCode.NO_CONTENT);
 };
+const getCurrent = (req, res, next) => {
+  const { email, subscription } = req.user;
+  res.status(HttpCode.OK).json({
+    status: 'success',
+    code: HttpCode.OK,
+    data: { email, subscription },
+  });
+};
+const updateSubscription = async (req, res, next) => {
+  const { id, subscription } = req.body;
+  const { name, email } = await authService.updateUserSubscription(
+    id,
+    subscription,
+  );
+  res.status(HttpCode.OK).json({
+    status: 'success',
+    code: HttpCode.OK,
+    data: { id, name, email, subscription },
+  });
+};
 
-export { registration, login, logout };
+export { registration, login, logout, getCurrent, updateSubscription };

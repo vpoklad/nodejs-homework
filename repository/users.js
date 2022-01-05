@@ -9,6 +9,14 @@ const create = async body => {
   return await user.save();
 };
 
+const updateUserSubscription = async (id, subscription) => {
+  return await User.findOneAndUpdate(
+    { _id: id },
+    { subscription },
+    { new: true },
+  );
+};
+
 const updateToken = async (id, token) => {
   return await User.findOneAndUpdate({ _id: id }, { token });
 };
@@ -17,4 +25,10 @@ const findById = async id => {
   return await User.findById(id);
 };
 
-export default { findByEmail, create, updateToken, findById };
+export default {
+  findByEmail,
+  create,
+  updateToken,
+  findById,
+  updateUserSubscription,
+};

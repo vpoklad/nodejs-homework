@@ -29,6 +29,11 @@ class AuthService {
     return user;
   }
 
+  async updateUserSubscription(id, subscription) {
+    const user = await UsersRepository.updateUserSubscription(id, subscription);
+    return user;
+  }
+
   getToken(user) {
     const { id, email } = user;
     const payload = { id, email };

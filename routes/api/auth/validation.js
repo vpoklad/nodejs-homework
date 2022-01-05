@@ -1,13 +1,11 @@
 import Joi from 'joi';
-// import mongooseService from 'mongoose';
-
-// const { Types } = mongooseService;
+import { Roles } from '../../../lib/constants';
 
 const createSchema = Joi.object({
   name: Joi.string().min(2).max(30),
   password: Joi.string().min(2).max(30).required(),
   email: Joi.string().email().required(),
-  subscription: Joi.string().valid('starter', 'pro', 'business'),
+  subscription: Joi.string().valid(Roles.STARTER, Roles.PRO, Roles.BUSINESS),
   token: Joi.string().token(),
 });
 
@@ -17,7 +15,10 @@ const credentialsSchema = Joi.object({
 });
 
 const updateSubscriptionSchema = Joi.object({
-  subscription: Joi.string().valid('starter', 'pro', 'business'),
+  id: Joi.string().required(),
+  subscription: Joi.string()
+    .valid(Roles.STARTER, Roles.PRO, Roles.BUSINESS)
+    .required(),
 });
 
 const updateCredentials = Joi.object({
@@ -71,10 +72,3 @@ export const validateToken = async (req, res, next) => {
   }
   next();
 };
-
-// export const validateId = async (req, res, next) => {
-//   if (!Types.ObjectId.isValid(req.params.id)) {
-//     return res.status(400).json({ message: 'Invalid ObjectId' });
-//   }
-//   next();
-// };

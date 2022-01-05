@@ -5,15 +5,27 @@ import {
   validateUpdateSubscription,
   validateToken,
 } from './validation';
-import { registration, login, logout } from '../../../controllers/auth';
+import { Roles } from '../../../lib/constants';
+import {
+  registration,
+  login,
+  logout,
+  getCurrent,
+  updateSubscription,
+} from '../../../controllers/auth';
 import guard from '../../../middlewares/guard';
+import roleAccess from '../../../middlewares/roleAccess';
 
 const router = new Router();
 
-router.patch('/', validateUpdateSubscription);
+router.patch(
+  '/',
+  [guard, roleAccess(Roles.PRO), validateUpdateSubscription],
+  updateSubscription,
+);
 router.post('/signin', validateCreate, registration);
 router.post('/login', validateCredentials, login);
 router.get('/logout', guard, logout);
-router.get('/current', validateToken);
+router.get('/current', validateToken, guard, getCurrent);
 
 export default router;
