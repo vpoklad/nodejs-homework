@@ -15,8 +15,4 @@ const roleAccess = role => async (req, res, next) => {
 
 export default roleAccess;
 
-// export const Roles = {
-//   STARTER: 'starter',
-//   PRO: 'pro',
-//   BUSINESS: 'business',
-// };
+
