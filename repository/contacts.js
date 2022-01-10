@@ -2,18 +2,21 @@ import Contact from '../model/contact';
 
 const listContacts = async (
   userId,
-  { sortBy, sortByDesc, filter, limit = 10, page = 1, favorite },
+  { sortBy, sortByDesc, filter, limit = 5, page = 1, favorite },
 ) => {
   let sortCriteria = null;
   const total = await Contact.find({ owner: userId }).countDocuments();
-  const skipValue = limit * (page - 1);
+  const lastPage = Math.ceil(total / limit);
+  const skipValue =
+    page >= lastPage ? limit * (lastPage - 1) : limit * (page - 1);
 
   let result = Contact.find({ owner: userId }).populate({
     path: 'owner',
     select: 'name email subscription',
   });
+
   if (favorite) {
-    result = Contact.find({ favorite: true }, { owner: userId }).populate({
+    result = Contact.find({ favorite: true, owner: userId }).populate({
       path: 'owner',
       select: 'name email subscription',
     });
@@ -30,6 +33,7 @@ const listContacts = async (
   }
 
   result = await result.skip(skipValue).limit(Number(limit)).sort(sortCriteria);
+
   return { total, contacts: result };
 };
 
