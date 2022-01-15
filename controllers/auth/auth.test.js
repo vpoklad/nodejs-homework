@@ -15,19 +15,36 @@ describe('Unit test signUp', () => {
     authService.getUser = jest.fn(async () => ({
       email: 'test@gmail.com',
       subscription: 'starter',
+      id: 'dfdf1232sdsd',
     }));
+
     authService.getToken = jest.fn(async data => data);
+    authService.setToken = jest.fn(async data => data);
+
     await login(req, res, next);
+
     expect(authService.getUser).toHaveBeenCalledWith(
       req.body.email,
       req.body.password,
     );
     expect(res.status).toHaveBeenCalledWith(HttpCode.OK);
+    expect(res.json).toBeCalledWith(
+      expect.objectContaining({
+        code: expect.any(Number),
+        data: {
+          token: expect.anything(),
+          user: { email: expect.any(String), subscription: expect.any(String) },
+        },
+        status: expect.any(String),
+      }),
+    );
   });
 
   test('Login with invalid credentials', async () => {
     authService.getUser = jest.fn(async () => false);
+
     await login(req, res, next);
+
     expect(authService.getUser).toHaveBeenCalledWith(
       req.body.email,
       req.body.password,
