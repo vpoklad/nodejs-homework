@@ -25,7 +25,7 @@ router.patch(
   [guard, roleAccess(Roles.PRO), validateUpdateSubscription],
   updateSubscription,
 );
-router.post('/signin', validateCreate, registration);
+router.post('/signup', validateCreate, registration);
 router.post('/login', validateCredentials, login);
 router.get('/logout', guard, logout);
 router.patch('/avatars', guard, upload.single('avatar'), uploadAvatar);
