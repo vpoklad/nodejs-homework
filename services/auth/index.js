@@ -34,9 +34,10 @@ class AuthService {
     const userByVerTOken = await UsersRepository.findByVerificationToken(
       verificationToken,
     );
+
     const status = !!userByVerTOken;
     if (status) {
-      await UsersRepository.updateVerify(status);
+      await UsersRepository.updateVerify(userByVerTOken.id, status);
     }
     return status;
   }

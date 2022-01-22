@@ -32,7 +32,7 @@ router.post('/login', validateCredentials, login);
 router.get('/logout', guard, logout);
 router.patch('/avatars', guard, upload.single('avatar'), uploadAvatar);
 router.get('/current', validateToken, guard, getCurrent);
-router.get('/verify:verificationToken', verifyUser);
+router.get('/verify/:verificationToken', verifyUser);
 router.post('/verify', repeatEmailForverifyUser);
 
 export default router;

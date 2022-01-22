@@ -132,6 +132,7 @@ const uploadAvatar = async (req, res, next) => {
 const verifyUser = async (req, res, next) => {
   try {
     const token = req.params.verificationToken;
+
     const isVerified = await authService.isUserVerified(token);
     if (isVerified) {
       res.status(HttpCode.OK).json({
@@ -142,7 +143,7 @@ const verifyUser = async (req, res, next) => {
     }
     res.status(HttpCode.BAD_REQUEST).json({
       status: 'error',
-      code: HttpCode.OK,
+      code: HttpCode.BAD_REQUEST,
       data: { message: 'Invalid token' },
     });
   } catch (error) {
