@@ -13,6 +13,8 @@ import {
   getCurrent,
   updateSubscription,
   uploadAvatar,
+  verifyUser,
+  repeatEmailForverifyUser,
 } from '../../../controllers/auth';
 import guard from '../../../middlewares/guard';
 import roleAccess from '../../../middlewares/roleAccess';
@@ -31,6 +33,6 @@ router.get('/logout', guard, logout);
 router.patch('/avatars', guard, upload.single('avatar'), uploadAvatar);
 router.get('/current', validateToken, guard, getCurrent);
 router.get('/verify:verificationToken', verifyUser);
-router.post('/verify', repeatEmailForVerifyUser);
+router.post('/verify', repeatEmailForverifyUser);
 
 export default router;
