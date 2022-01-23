@@ -135,7 +135,7 @@ const verifyUser = async (req, res, next) => {
 
     const isVerified = await authService.isUserVerified(token);
     if (isVerified) {
-      res.status(HttpCode.OK).json({
+      return res.status(HttpCode.OK).json({
         status: 'success',
         code: HttpCode.OK,
         data: { message: 'email verified successful' },
@@ -153,6 +153,33 @@ const verifyUser = async (req, res, next) => {
 
 const repeatEmailForverifyUser = async (req, res, next) => {
   try {
+    const { email } = req.body;
+    const { verificationToken, name } = await authService.getUserVerifyToken(
+      email,
+    );
+    if (verificationToken) {
+      const emailService = new EmailService(
+        process.env.NODE_ENV,
+        new SenderNodemailer(),
+      );
+      const isSend = await emailService.sendVerifyEmail(
+        email,
+        name,
+        verificationToken,
+      );
+      return res.status(HttpCode.OK).json({
+        status: 'success',
+        code: HttpCode.OK,
+        data: {
+          message: 'Verification email sent',
+          isSendVerification: isSend,
+        },
+      });
+    }
+    res.status(HttpCode.BAD_REQUEST).json({
+      status: 'error',
+      code: HttpCode.BAD_REQUEST,
+    });
   } catch (error) {
     next(error);
   }

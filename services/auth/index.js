@@ -29,6 +29,14 @@ class AuthService {
     }
     return user;
   }
+  async getUserVerifyToken(email) {
+    const user = await UsersRepository.findByEmail(email);
+    if (!user) {
+      return null;
+    }
+
+    return user;
+  }
 
   async isUserVerified(verificationToken) {
     const userByVerTOken = await UsersRepository.findByVerificationToken(
