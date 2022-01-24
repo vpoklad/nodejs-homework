@@ -1,4 +1,5 @@
 import User from '../model/user';
+import { randomUUID } from 'crypto';
 
 const findByEmail = async email => {
   return await User.findOne({ email });
@@ -8,7 +9,7 @@ const findByVerificationToken = async verificationToken => {
 };
 
 const create = async body => {
-  const user = new User(body);
+  const user = new User({ ...body, verificationToken: randomUUID() });
   return await user.save();
 };
 

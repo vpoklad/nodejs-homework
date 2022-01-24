@@ -43,7 +43,7 @@ const userSchema = new Schema(
     },
     verificationToken: {
       type: String,
-      default: randomUUID(),
+      required: [true, 'Verify token is required'],
     },
 
     owner: {

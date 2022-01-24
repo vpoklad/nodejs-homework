@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 7000
 
-CMD ["node", "./bin/server.js"]
+CMD ["npm", "start"]
