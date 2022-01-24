@@ -9,7 +9,7 @@ const findByVerificationToken = async verificationToken => {
 };
 
 const create = async body => {
-  const user = new User({ ...body, verificationToken: randomUUID() });
+  const user = new User(body);
   return await user.save();
 };
 
