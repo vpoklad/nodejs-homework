@@ -5,6 +5,11 @@ import {
   LocalFileService,
   CloudFileService,
 } from '../../services/file-storage';
+import {
+  SenderNodemailer,
+  SenderSendgrid,
+  EmailService,
+} from './../../services/email';
 import { HttpCode } from '../../lib/constants';
 
 const registration = async (req, res, next) => {
@@ -18,10 +23,22 @@ const registration = async (req, res, next) => {
         message: 'Email in use',
       });
     }
-    const data = await authService.create(req.body);
-    res
-      .status(HttpCode.CREATED)
-      .json({ status: 'success', code: HttpCode.CREATED, data });
+    const userData = await authService.create(req.body);
+    const emailService = new EmailService(
+      process.env.NODE_ENV,
+      new SenderSendgrid(),
+    );
+    const isSend = await emailService.sendVerifyEmail(
+      email,
+      userData.name,
+      userData.verificationToken,
+    );
+    delete userData.verificationToken;
+    res.status(HttpCode.CREATED).json({
+      status: 'success',
+      code: HttpCode.CREATED,
+      data: { ...userData, isSendVerification: isSend },
+    });
   } catch (error) {
     next(error);
   }
@@ -112,6 +129,62 @@ const uploadAvatar = async (req, res, next) => {
   }
 };
 
+const verifyUser = async (req, res, next) => {
+  try {
+    const token = req.params.verificationToken;
+
+    const isVerified = await authService.isUserVerified(token);
+    if (isVerified) {
+      return res.status(HttpCode.OK).json({
+        status: 'success',
+        code: HttpCode.OK,
+        data: { message: 'email verified successful' },
+      });
+    }
+    res.status(HttpCode.BAD_REQUEST).json({
+      status: 'error',
+      code: HttpCode.BAD_REQUEST,
+      data: { message: 'Invalid token' },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const repeatEmailForverifyUser = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const { verificationToken, name } = await authService.getUserVerifyToken(
+      email,
+    );
+    if (verificationToken) {
+      const emailService = new EmailService(
+        process.env.NODE_ENV,
+        new SenderNodemailer(),
+      );
+      const isSend = await emailService.sendVerifyEmail(
+        email,
+        name,
+        verificationToken,
+      );
+      return res.status(HttpCode.OK).json({
+        status: 'success',
+        code: HttpCode.OK,
+        data: {
+          message: 'Verification email sent',
+          isSendVerification: isSend,
+        },
+      });
+    }
+    res.status(HttpCode.BAD_REQUEST).json({
+      status: 'error',
+      code: HttpCode.BAD_REQUEST,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   registration,
   login,
@@ -119,4 +192,6 @@ export {
   getCurrent,
   updateSubscription,
   uploadAvatar,
+  verifyUser,
+  repeatEmailForverifyUser,
 };
